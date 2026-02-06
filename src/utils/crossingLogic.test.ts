@@ -150,4 +150,63 @@ describe('calculateCrossingStatus', () => {
         const status = calculateCrossingStatus(data, now);
         expect(status.state).toBe('OPEN');
     });
+
+    it('should handle numeric delay correctly', () => {
+        const now = createTime(10, 0);
+        const data: FerrotramviariaResponse = {
+            arrivi: [{
+                numero: '130',
+                categoria: 'REG',
+                destinazione: 'Bari',
+                orario: '09:55',
+                ritardo: 10,  // Numeric delay: 10 mins => 10:05 (5 mins away)
+                type: 'arrival'
+            } as TrainEvent],
+            partenze: []
+        };
+        
+        const status = calculateCrossingStatus(data, now);
+        expect(status.state).toBe('CLOSED');
+        expect(status.nextTrain?.minutesUntil).toBe(5);
+    });
+
+    it('should return fallback train info when OPEN', () => {
+        const now = createTime(10, 0);
+        const data: FerrotramviariaResponse = {
+            arrivi: [{
+                numero: '131',
+                categoria: 'REG',
+                destinazione: 'Bari',
+                orario: '10:30', // 30 mins away (OPEN)
+                ritardo: 0,
+                type: 'arrival'
+            } as TrainEvent],
+            partenze: []
+        };
+        
+        const status = calculateCrossingStatus(data, now);
+        expect(status.state).toBe('OPEN');
+        expect(status.nextTrain).not.toBeNull();
+        expect(status.nextTrain?.minutesUntil).toBe(30);
+        expect(status.nextTrain?.label).toContain('Direzione Bari');
+    });
+
+    it('should use "Treno da" label when provenienza is available', () => {
+        const now = createTime(10, 0);
+        const data: FerrotramviariaResponse = {
+            arrivi: [{
+                numero: '132',
+                categoria: 'REG',
+                destinazione: 'Bari',
+                provenienza: 'Bitonto',
+                orario: '10:04',
+                ritardo: 0,
+                type: 'arrival'
+            } as TrainEvent],
+            partenze: []
+        };
+        
+        const status = calculateCrossingStatus(data, now);
+        expect(status.nextTrain?.label).toBe('Treno da Bitonto');
+    });
 });

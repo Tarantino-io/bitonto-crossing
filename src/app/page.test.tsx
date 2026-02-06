@@ -10,6 +10,10 @@ vi.mock('lucide-react', () => ({
     AlertTriangle: () => <span data-testid="icon-alert"></span>,
     Activity: () => <span data-testid="icon-activity"></span>,
     Info: () => <span data-testid="icon-info"></span>,
+    Mic: () => <span data-testid="icon-mic"></span>,
+    Sun: () => <span data-testid="icon-sun"></span>,
+    Moon: () => <span data-testid="icon-moon"></span>,
+    Laptop: () => <span data-testid="icon-laptop"></span>,
 }));
 
 // Mock fetch

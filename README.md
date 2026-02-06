@@ -70,4 +70,4 @@ This project is optimized for deployment on [Vercel](https://vercel.com/new).
 
 ## 📄 License
 
-Made with love from [Tarantino.io](https://tarantino.io).
+Made with love by [Tarantino.io](https://tarantino.io).

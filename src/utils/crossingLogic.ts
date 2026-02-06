@@ -96,42 +96,6 @@ export function calculateCrossingStatus(data: FerrotramviariaResponse, now: Date
   // OPEN: > 10 mins
   
   if (!nearestTrain) {
-    // Try to find the absolute nearest future train for information purposes
-    let minFutureDiff = Infinity;
-    let fallbackTrain: TrainEvent | null = null;
-    let fallbackType = 'arrival';
-
-    for (const train of allMovements) {
-        const [h, m] = train.orario.split(':').map(Number);
-        if (isNaN(h) || isNaN(m)) continue;
-        const trainMinutes = h * 60 + m;
-        
-        let delayMinutes = 0;
-        if (train.ritardo && typeof train.ritardo === 'string' && train.ritardo.includes("'")) {
-             delayMinutes = parseInt(train.ritardo.replace("'", ''), 10) || 0;
-        }
-
-        const diff = (trainMinutes + delayMinutes) - currentMinutes;
-        // Looking for positive diff (future)
-        if (diff > 0 && diff < minFutureDiff) {
-            minFutureDiff = diff;
-            fallbackTrain = train;
-            fallbackType = train.type || 'arrival';
-        }
-    }
-
-    if (fallbackTrain) {
-         const dest = fallbackTrain.destinazione || fallbackTrain.provenienza || 'Unknown';
-         const label = fallbackTrain.provenienza 
-            ? `Treno da ${fallbackTrain.provenienza}`
-            : `Direzione ${dest}`;
-         return { 
-           state: 'OPEN', 
-           message: 'Nessun treno in arrivo a breve.', 
-           nextTrain: { ...fallbackTrain, minutesUntil: minFutureDiff, label } 
-         };
-    }
-
     return { state: 'OPEN', message: 'Nessun treno in arrivo a breve.', nextTrain: null };
   }
 
