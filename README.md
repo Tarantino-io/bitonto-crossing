@@ -70,4 +70,6 @@ This project is optimized for deployment on [Vercel](https://vercel.com/new).
 
 ## 📄 License
 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 Made with love by [Tarantino.io](https://tarantino.io).
