@@ -2,15 +2,14 @@
 
 A real-time mobile web application that monitors and visualizes the status of level crossings in Bitonto, Italy.
 
-![Bitonto Crossing Monitor](https://via.placeholder.com/800x400?text=Bitonto+Crossing+Monitor)
-_(Replace with actual screenshot)_
-
 ## 🚀 Features
 
 - **Real-Time Status**: Displays estimated crossing status (Open, Closed, Warning) based on live train movements.
 - **Dual-Station Monitoring**: Tracks trains at both **Bitonto Centrale** and **Bitonto SS. Medici** for maximum accuracy.
 - **Live Updates**: Polls data every 5 seconds without page refreshes.
-- **Mobile-First Design**: elegant, dark-themed UI optimized for smartphones.
+- **Mobile-First Design**: Elegant, dark-themed UI optimized for smartphones.
+- **PWA Support**: Installable on iOS/Android home screens.
+- **Siri Shortcuts**: "Hey Siri, check level crossing" support.
 - **Resilient**: Handles API failures gracefully and clearly communicates data staleness.
 
 ## 🛠️ Tech Stack
