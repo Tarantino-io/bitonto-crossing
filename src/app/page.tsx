@@ -184,7 +184,7 @@ export default function Home() {
                className="inline-block text-[10px] text-[var(--muted-foreground)] hover:text-cyan-500 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded"
                aria-label="Visit Tarantino.io website"
             >
-               Made with love by Tarantino.io
+               Sviluppato con amore da Tarantino.io
             </a>
          </div>
       </footer>
