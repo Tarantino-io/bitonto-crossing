@@ -64,6 +64,8 @@ npx vitest run
 
 This project is optimized for deployment on [Vercel](https://vercel.com/new).
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FTarantino-io%2Fbitonto-crossing)
+
 1. Push your code to GitHub.
 2. Import the project into Vercel.
 3. Deploy! (No environment variables required for basic functionality).
