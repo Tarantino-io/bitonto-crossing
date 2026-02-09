@@ -1,13 +1,13 @@
 # Bitonto Level Crossing Monitor
 
-[![CI](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml/badge.svg)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml/badge.svg)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml)
-[![Coverage](https://codecov.io/gh/Tarantino-io/bitonto-crossing/branch/main/graph/badge.svg)](https://codecov.io/gh/Tarantino-io/bitonto-crossing)
-[![License](https://img.shields.io/github/license/Tarantino-io/bitonto-crossing)](./LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D20.9.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![pnpm](https://img.shields.io/badge/pnpm-10.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/)
-[![Code style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg?logo=prettier)](https://prettier.io/)
+[![CI](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml?query=branch%3Amain)
+[![CodeQL](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/Tarantino-io/bitonto-crossing/branch/main/graph/badge.svg)](https://codecov.io/gh/Tarantino-io/bitonto-crossing/tree/main)
+[![License](https://img.shields.io/github/license/Tarantino-io/bitonto-crossing)](https://github.com/Tarantino-io/bitonto-crossing/blob/main/LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20.9.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/en/download)
+[![pnpm](https://img.shields.io/badge/pnpm-10.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/installation)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/docs)
+[![Code style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg?logo=prettier)](https://prettier.io/docs/en/)
 
 Production-ready mobile web app that estimates the status of level crossings in Bitonto, Italy.
 
@@ -76,4 +76,4 @@ Use Vercel for deployment:
 
 ## License
 
-MIT - see [LICENSE](./LICENSE).
+MIT - see [LICENSE](https://github.com/Tarantino-io/bitonto-crossing/blob/main/LICENSE).
