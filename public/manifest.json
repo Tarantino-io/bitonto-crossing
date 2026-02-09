@@ -1,21 +1,58 @@
 {
   "name": "Bitonto Crossing Monitor",
-  "short_name": "Bitonto Crossing",
+  "short_name": "Bitonto",
   "description": "Monitoraggio in tempo reale del passaggio a livello di Bitonto.",
-  "start_url": "/",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "lang": "it-IT",
+  "dir": "ltr",
+  "orientation": "portrait",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
+  "categories": ["utilities", "travel", "navigation"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Aggiorna Stato",
+      "short_name": "Aggiorna",
+      "description": "Apri l'app e controlla subito lo stato attuale.",
+      "url": "/?source=shortcut-refresh",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

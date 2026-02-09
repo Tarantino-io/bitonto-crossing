@@ -1,17 +1,17 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @layer base {
   :root {
     /* Light Mode (Default) */
     --background: #f0f9ff; /* Sky 50 */
     --foreground: #0f172a; /* Slate 900 */
-    
+
     --card: #ffffff;
     --card-foreground: #0f172a;
-    
+
     --muted: #e0f2fe; /* Sky 100 */
-    --muted-foreground: #64748b; /* Slate 500 */
-    
+    --muted-foreground: #475569; /* Slate 600 */
+
     --border: #bae6fd; /* Sky 200 */
   }
 
@@ -19,13 +19,13 @@
     /* Dark Mode (Override) */
     --background: #0f172a; /* Slate 900 */
     --foreground: #f8fafc; /* Slate 50 */
-    
+
     --card: #1e293b; /* Slate 800 */
     --card-foreground: #f8fafc;
-    
+
     --muted: #1e293b;
-    --muted-foreground: #94a3b8; /* Slate 400 */
-    
+    --muted-foreground: #cbd5e1; /* Slate 300 */
+
     --border: #334155; /* Slate 700 */
   }
 }
@@ -38,7 +38,14 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+:focus-visible {
+  outline: 2px solid #06b6d4;
+  outline-offset: 2px;
 }
 
 /* Animations */
@@ -59,4 +66,15 @@ body {
 
 .animate-pulse-ring {
   animation: pulse-ring 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

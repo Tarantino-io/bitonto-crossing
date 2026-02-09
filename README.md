@@ -1,77 +1,79 @@
 # Bitonto Level Crossing Monitor
 
-A real-time mobile web application that monitors and visualizes the status of level crossings in Bitonto, Italy.
+[![CI](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml/badge.svg)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml/badge.svg)](https://github.com/Tarantino-io/bitonto-crossing/actions/workflows/codeql.yml)
+[![Coverage](https://codecov.io/gh/Tarantino-io/bitonto-crossing/branch/main/graph/badge.svg)](https://codecov.io/gh/Tarantino-io/bitonto-crossing)
+[![License](https://img.shields.io/github/license/Tarantino-io/bitonto-crossing)](./LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20.9.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.x-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/)
+[![Code style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg?logo=prettier)](https://prettier.io/)
 
-## 🚀 Features
+Production-ready mobile web app that estimates the status of level crossings in Bitonto, Italy.
 
-- **Real-Time Status**: Displays estimated crossing status (Open, Closed, Warning) based on live train movements.
-- **Dual-Station Monitoring**: Tracks trains at both **Bitonto Centrale** and **Bitonto SS. Medici** for maximum accuracy.
-- **Live Updates**: Polls data every 5 seconds without page refreshes.
-- **Mobile-First Design**: Elegant, dark-themed UI optimized for smartphones.
-- **PWA Support**: Installable on iOS/Android home screens.
-- **Siri Shortcuts**: "Hey Siri, check level crossing" support.
-- **Resilient**: Handles API failures gracefully and clearly communicates data staleness.
+## Features
 
-## 🛠️ Tech Stack
+- Real-time status estimation (`OPEN`, `WARNING`, `CLOSED`) using live train movement data.
+- Dual-station monitoring: `Bitonto Centrale` and `Bitonto SS. Medici`.
+- Resilient API handling with timeout, partial-source fallback, and no-store caching.
+- PWA support (installable on iOS/Android home screens).
+- Quality gates with CI: formatting, linting, type-checking, tests, and coverage thresholds.
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Testing**: [Vitest](https://vitest.dev/) + React Testing Library
+## Data Source and Methodology
 
-## 🚂 Data Source & Methodology
+This app does not read physical crossing sensors. It infers likely crossing state from Ferrotramviaria real-time train feeds.
 
-This application does not use physical sensors on the tracks. Instead, it approximates the crossing status by analyzing real-time train arrival and departure boards from **Ferrotramviaria**:
+- `CLOSED`: train imminent or just passed (`-1` to `+2` minutes).
+- `WARNING`: train approaching (`+3` to `+7` minutes).
+- `OPEN`: no nearby train movement in the warning window.
 
-- **CLOSED**: A train is departing or arriving within **5 minutes**.
-- **WARNING**: A train is approaching (arriving within **5-12 minutes**).
-- **OPEN**: No trains detected within the next 12 minutes.
+Important: this is an estimate. Always follow physical signals and barriers at the crossing.
 
-> **Disclaimer**: This tool is for informational purposes only. Always obey physical signals and gates at the crossing.
+## Tech Stack
 
-## 📦 Installation
+- Next.js 16 (App Router)
+- React 19
+- Tailwind CSS v4
+- Vitest + Testing Library
+- ESLint + TypeScript + Prettier
+- GitHub Actions (CI + CodeQL)
 
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/yourusername/bitonto-crossing.git
-   cd bitonto-crossing
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) (or the port shown in terminal).
-
-## 🧪 Testing
-
-Run the full unit test suite:
+## Quick Start
 
 ```bash
-npm test
-# or
-npx vitest run
+git clone https://github.com/Tarantino-io/bitonto-crossing.git
+cd bitonto-crossing
+pnpm install
+pnpm run dev
 ```
 
-## 🚀 Deployment
+Open [http://localhost:3000](http://localhost:3000).
 
-This project is optimized for deployment on [Vercel](https://vercel.com/new).
+## Quality Commands
+
+```bash
+pnpm run format:check
+pnpm run lint
+pnpm run typecheck
+pnpm run test
+pnpm run coverage
+pnpm run quality
+```
+
+`pnpm run quality` is the same quality gate used by CI.
+
+## Deployment
+
+Use Vercel for deployment:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FTarantino-io%2Fbitonto-crossing)
 
-1. Push your code to GitHub.
-2. Import the project into Vercel.
-3. Deploy! (No environment variables required for basic functionality).
+## Security and Maintenance
 
-## 📄 License
+- `CodeQL` workflow for static security analysis.
+- `Dependabot` weekly dependency updates.
+- CI upload of coverage artifacts and Codecov reporting.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## License
 
-Made with love by [Tarantino.io](https://tarantino.io).
+MIT - see [LICENSE](./LICENSE).

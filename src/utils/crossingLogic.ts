@@ -4,7 +4,7 @@ export interface TrainEvent {
   destinazione?: string;
   provenienza?: string;
   orario: string; // "HH:mm"
-  ritardo: string | number; // "X'" or "In Orario" or number
+  ritardo: string | number;
   binarioReale?: string;
   type?: 'arrival' | 'departure';
 }
@@ -15,114 +15,174 @@ export interface FerrotramviariaResponse {
 }
 
 export interface CrossingStatus {
-    state: 'OPEN' | 'CLOSED' | 'WARNING';
-    message: string;
-    nextTrain: {
-        orario: string;
-        ritardo: string | number;
-        minutesUntil: number;
-        label: string;
-        destinazione?: string;
-        provenienza?: string;
-    } | null;
+  state: 'OPEN' | 'CLOSED' | 'WARNING';
+  message: string;
+  nextTrain: {
+    orario: string;
+    ritardo: string | number;
+    minutesUntil: number;
+    label: string;
+    destinazione?: string;
+    provenienza?: string;
+  } | null;
+}
+
+const CLOSED_PAST_GRACE_MINUTES = 1;
+const CLOSED_WINDOW_MINUTES = 2;
+const WARNING_WINDOW_MINUTES = 7;
+const LOOKAHEAD_WINDOW_MINUTES = 90;
+
+interface CandidateTrain {
+  train: TrainEvent;
+  minutesUntil: number;
+}
+
+function parseDelayMinutes(delay: string | number): number {
+  if (typeof delay === 'number' && Number.isFinite(delay)) {
+    return Math.max(0, delay);
+  }
+
+  if (typeof delay !== 'string') {
+    return 0;
+  }
+
+  const normalized = delay.trim().toLowerCase();
+  if (!normalized || normalized.includes('orario')) {
+    return 0;
+  }
+
+  const extracted = normalized.match(/-?\d+/);
+  if (!extracted) {
+    return 0;
+  }
+
+  const value = Number.parseInt(extracted[0], 10);
+  return Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function parseMinutesOfDay(orario: string): number | null {
+  const parsed = orario.trim().match(/^(\d{1,2}):(\d{2})/);
+  if (!parsed) {
+    return null;
+  }
+
+  const hour = Number.parseInt(parsed[1], 10);
+  const minute = Number.parseInt(parsed[2], 10);
+
+  if (
+    !Number.isFinite(hour) ||
+    !Number.isFinite(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+}
+
+function getMinutesUntilTrain(
+  trainMinutes: number,
+  currentMinutes: number,
+): { upcoming: number | null; recent: number | null } {
+  const directDiff = trainMinutes - currentMinutes;
+
+  const upcomingCandidates = [directDiff, directDiff + 1440]
+    .filter((diff) => diff >= 0 && diff <= LOOKAHEAD_WINDOW_MINUTES)
+    .sort((a, b) => a - b);
+
+  const recentCandidates = [directDiff, directDiff - 1440]
+    .filter((diff) => diff < 0 && diff >= -CLOSED_PAST_GRACE_MINUTES)
+    .sort((a, b) => b - a);
+
+  return {
+    upcoming: upcomingCandidates[0] ?? null,
+    recent: recentCandidates[0] ?? null,
+  };
 }
 
 /**
  * Determines the simplified status of the level crossing (OPEN, CLOSED, WARNING)
  * based on the provided train arrival/departure data.
- * 
- * @param data - The raw response from Ferrotramviaria APIs containing arrivi/partenze.
- * @param now - Optional reference time (default: new Date()).
- * @returns An object containing the status, a user-facing message, and details of the relevant train.
  */
-export function calculateCrossingStatus(data: FerrotramviariaResponse, now: Date = new Date()): CrossingStatus {
-  // Logic to determine if crossing is likely closed
-  // Simplistic heuristic:
-  // If a train is departing in < 5 mins OR arriving in < 5 mins => CLOSED
-  // If a train is delayed and expected time is NOW => CLOSED
-  
-  // Fix: Force 'Europe/Rome' timezone to match the API's wall clock time
-  const italyTimeStr = now.toLocaleTimeString('en-US', { timeZone: 'Europe/Rome', hour12: false, hour: '2-digit', minute: '2-digit' });
+export function calculateCrossingStatus(
+  data: FerrotramviariaResponse,
+  now: Date = new Date(),
+): CrossingStatus {
+  // Force Europe/Rome to match the source wall-clock.
+  const italyTimeStr = now.toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/Rome',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   const [currentH, currentM] = italyTimeStr.split(':').map(Number);
   const currentMinutes = currentH * 60 + currentM;
 
-  let minDiff = Infinity;
-  let nearestTrain: TrainEvent | null = null;
-  let trainType: 'arrival' | 'departure' = 'arrival';
+  let nearestUpcoming: CandidateTrain | null = null;
+  let nearestRecent: CandidateTrain | null = null;
 
-  // Combine arrays to check all movements
-  // Filter out trains without time
   const allMovements = [
-    ...(data.arrivi || []).map(t => ({ ...t, type: 'arrival' as const })),
-    ...(data.partenze || []).map(t => ({ ...t, type: 'departure' as const }))
-  ].filter(t => t && t.orario && typeof t.orario === 'string' && t.orario.includes(':'));
+    ...(data.arrivi || []).map((train) => ({ ...train, type: 'arrival' as const })),
+    ...(data.partenze || []).map((train) => ({ ...train, type: 'departure' as const })),
+  ].filter(
+    (train) =>
+      train && train.orario && typeof train.orario === 'string' && train.orario.includes(':'),
+  );
 
   for (const train of allMovements) {
-    // Parse time "HH:mm"
-    const [h, m] = train.orario.split(':').map(Number);
-    if (isNaN(h) || isNaN(m)) continue;
-    
-    const trainMinutes = h * 60 + m;
-
-    // Add delay
-    let delayMinutes = 0;
-    if (typeof train.ritardo === 'number') {
-      delayMinutes = train.ritardo;
-    } else if (typeof train.ritardo === 'string' && train.ritardo.includes("'")) {
-      delayMinutes = parseInt(train.ritardo.replace("'", ''), 10) || 0;
-    }
-    
-    // Handle day rollover roughly (not perfect but works for daytime)
-    // If train is 00:10 and now is 23:50, we add 24h to train
-    if (trainMinutes < currentMinutes - 720) { // If > 12h past, assume next day? 
-       // Actually simpler: just focus on near future trains
+    const parsedMinutes = parseMinutesOfDay(train.orario);
+    if (parsedMinutes === null) {
+      continue;
     }
 
-    const expectedMinutes = trainMinutes + delayMinutes;
-    const diff = expectedMinutes - currentMinutes;
+    const delayMinutes = parseDelayMinutes(train.ritardo);
+    const expectedMinutes = (((parsedMinutes + delayMinutes) % 1440) + 1440) % 1440;
+    const { upcoming, recent } = getMinutesUntilTrain(expectedMinutes, currentMinutes);
 
-    // valid future or very recent past trains
-    // If diff is between -2 (just passed) and +120 (next 2 hours)
-    if (diff >= -5 && diff < minDiff) { 
-        minDiff = diff;
-        nearestTrain = train;
-        trainType = train.type || 'arrival';
+    if (upcoming !== null && (!nearestUpcoming || upcoming < nearestUpcoming.minutesUntil)) {
+      nearestUpcoming = { train, minutesUntil: upcoming };
+    }
+
+    if (recent !== null && (!nearestRecent || recent > nearestRecent.minutesUntil)) {
+      nearestRecent = { train, minutesUntil: recent };
     }
   }
 
-  // Determine status
-  // CLOSED: Train expected in <= 5 mins or passed < 2 mins ago
-  // WARNING: Train expected in 5-10 mins
-  // OPEN: > 10 mins
-  
-  if (!nearestTrain) {
+  const nearestTrainData = nearestUpcoming ?? nearestRecent;
+  if (!nearestTrainData) {
     return { state: 'OPEN', message: 'Nessun treno in arrivo a breve.', nextTrain: null };
   }
 
-  // Construct label for critical train
-  const dest = nearestTrain.destinazione || nearestTrain.provenienza || 'Unknown';
-  // Check if we have explicit origin for arrival, otherwise default to destination-based label
-  const label = nearestTrain.provenienza 
+  const nearestTrain = nearestTrainData.train;
+  const minutesUntil = nearestTrainData.minutesUntil;
+  const destinationOrOrigin =
+    nearestTrain.destinazione || nearestTrain.provenienza || 'sconosciuta';
+  const label = nearestTrain.provenienza
     ? `Treno da ${nearestTrain.provenienza}`
-    : `Direzione ${dest}`;
+    : `Direzione ${destinationOrOrigin}`;
 
-  if (minDiff <= 5 && minDiff >= -5) {
-     return { 
-       state: 'CLOSED', 
-       message: 'Attenzione! Passaggio a livello probabilmente CHIUSO.',
-       nextTrain: { ...nearestTrain, minutesUntil: minDiff, label }
-     };
-  } else if (minDiff <= 12) {
-     return { 
-       state: 'WARNING', 
-       message: 'Il passaggio a livello potrebbe chiudersi a breve.',
-       nextTrain: { ...nearestTrain, minutesUntil: minDiff, label }
-     };
-  } else {
-     return { 
-       state: 'OPEN', 
-       message: 'Via libera (per ora).',
-       nextTrain: { ...nearestTrain, minutesUntil: minDiff, label }
-     };
+  if (minutesUntil <= CLOSED_WINDOW_MINUTES && minutesUntil >= -CLOSED_PAST_GRACE_MINUTES) {
+    return {
+      state: 'CLOSED',
+      message: 'Attenzione! Passaggio a livello probabilmente CHIUSO.',
+      nextTrain: { ...nearestTrain, minutesUntil, label },
+    };
   }
+
+  if (minutesUntil <= WARNING_WINDOW_MINUTES) {
+    return {
+      state: 'WARNING',
+      message: 'Il passaggio a livello potrebbe chiudersi a breve.',
+      nextTrain: { ...nearestTrain, minutesUntil, label },
+    };
+  }
+
+  return {
+    state: 'OPEN',
+    message: 'Via libera (per ora).',
+    nextTrain: { ...nearestTrain, minutesUntil, label },
+  };
 }
