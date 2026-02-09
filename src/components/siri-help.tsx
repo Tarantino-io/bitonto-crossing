@@ -76,7 +76,10 @@ export function SiriHelp() {
             <h2 id="siri-help-title" className="text-xl font-bold">
               Hey Siri, status?
             </h2>
-            <p id="siri-help-description" className="text-sm text-[var(--muted-foreground)] leading-relaxed">
+            <p
+              id="siri-help-description"
+              className="text-sm text-[var(--muted-foreground)] leading-relaxed"
+            >
               Want to check the crossing status with Siri? Create a <strong>Shortcut</strong> in 1
               minute.
             </p>
@@ -106,7 +109,9 @@ export function SiriHelp() {
                   Add action: <strong>Speak text</strong>. Text: &quot;Crossing status is:
                   [Dictionary Value]&quot;.
                 </li>
-                <li>Name the shortcut <strong>&quot;Check Level Crossing&quot;</strong>.</li>
+                <li>
+                  Name the shortcut <strong>&quot;Check Level Crossing&quot;</strong>.
+                </li>
               </ol>
             </div>
 

@@ -23,10 +23,8 @@ export function ThemeToggle() {
     else setTheme('system');
   };
 
-  const currentThemeLabel =
-    theme === 'system' ? 'Sistema' : theme === 'light' ? 'Chiaro' : 'Scuro';
-  const nextThemeLabel =
-    theme === 'system' ? 'Chiaro' : theme === 'light' ? 'Scuro' : 'Sistema';
+  const currentThemeLabel = theme === 'system' ? 'Sistema' : theme === 'light' ? 'Chiaro' : 'Scuro';
+  const nextThemeLabel = theme === 'system' ? 'Chiaro' : theme === 'light' ? 'Scuro' : 'Sistema';
 
   const getIcon = () => {
     if (theme === 'light') return <Sun className="w-4 h-4" />;

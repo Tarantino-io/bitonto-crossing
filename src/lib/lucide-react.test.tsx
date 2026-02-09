@@ -1,16 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import {
-  AlertTriangle,
-  Clock,
-  Laptop,
-  Mic,
-  Moon,
-  RefreshCw,
-  Sun,
-  Train,
-  X,
-} from './lucide-react';
+import { AlertTriangle, Clock, Laptop, Mic, Moon, RefreshCw, Sun, Train, X } from './lucide-react';
 
 describe('lucide-react local shim', () => {
   it('renders all exported icons used by the UI', () => {

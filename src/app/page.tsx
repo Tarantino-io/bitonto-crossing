@@ -174,9 +174,7 @@ export default function Home() {
       data.status !== 'OPEN' && data.nextTrain
         ? ` Prossimo treno tra ${Math.max(data.nextTrain.minutesUntil, 0)} minuti.`
         : '';
-    const staleMessage = isStale
-      ? ' Attenzione: aggiornamento dati non recente.'
-      : '';
+    const staleMessage = isStale ? ' Attenzione: aggiornamento dati non recente.' : '';
 
     return `Stato: ${getStatusText(data.status)}.${nextTrainMessage}${staleMessage}`;
   }, [data, fetchError, isStale]);
