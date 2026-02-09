@@ -6,6 +6,10 @@ updates:
       interval: 'weekly'
       day: 'monday'
       time: '06:00'
+    ignore:
+      - dependency-name: 'eslint'
+        update-types:
+          - 'version-update:semver-major'
     open-pull-requests-limit: 10
     labels:
       - 'dependencies'
